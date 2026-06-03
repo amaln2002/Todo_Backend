@@ -4,6 +4,7 @@ import com.amigoscode.todo_backend.Task;
 import com.amigoscode.todo_backend.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -25,7 +26,33 @@ public class TaskService {
     }
 
     public Task addTask(Task task) {
+        task.setId(null);
+        if (task.getTaskStatus() == null || task.getTaskStatus().isBlank()) {
+            task.setTaskStatus("NOT_COMPLETED");
+        }
         return taskRepository.save(task);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Task> getTasksBetween(LocalDate start, LocalDate end) {
+        return taskRepository.findByTaskDateBetween(start, end);
+    }
+
+    @Transactional
+    public List<Task> ToggleTasksAfter(LocalDate after) {
+        List<Task> tasksToggle = taskRepository.findByTaskDateIsAfter(after);
+        for (Task task : tasksToggle) {
+            task.setTaskStatus("COMPLETED");
+            taskRepository.save(task);
+        }
+        return tasksToggle;
+    }
+    @Transactional
+    public void deleteTasksBefore(LocalDate before) {
+        List<Task> tasksToDelete = taskRepository.findByTaskDateIsBefore(before);
+        for (Task task : tasksToDelete) {
+            taskRepository.deleteById(task.getId());
+        }
     }
 
     public void deleteTask(Long id) {
