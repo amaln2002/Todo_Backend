@@ -9,8 +9,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/tasks")
-//@CrossOrigin(origins = "http://localhost:4200")
+@RequestMapping("/api/tasks")
+@CrossOrigin(origins = "http://localhost:4200")
 @RequiredArgsConstructor
 public class TaskController {
     private final TaskService taskService;
