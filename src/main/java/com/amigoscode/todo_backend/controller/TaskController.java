@@ -25,7 +25,19 @@ public class TaskController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         return taskService.getTasksByDate(date);
     }
+    @GetMapping("/offset")
+    public List<Task> getTasksByOffset(@RequestParam int offset) {
+        LocalDate today = LocalDate.now();
+        LocalDate start = today.minusDays(offset);
+        return taskService.getTasksBetween(start, today);
+    }
 
+    @PostMapping("/date")
+    public List<Task> ToggleTasksIsAfter(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        taskService.deleteTasksBefore(date);
+        return taskService.ToggleTasksAfter(date);
+    }
     @GetMapping("/status")
     public List<Task> getTasksByStatus(@RequestParam String status) {
         return taskService.getTasksByStatus(status);
@@ -33,11 +45,13 @@ public class TaskController {
 
     @PostMapping
     public Task addTask(@RequestBody Task task) {
+
         return taskService.addTask(task);
     }
 
     @DeleteMapping("/{id}")
     public void deleteTask(@PathVariable Long id) {
+
         taskService.deleteTask(id);
     }
 
@@ -47,6 +61,7 @@ public class TaskController {
     }
     @PutMapping("/{id}")
     public Task updateTask(@PathVariable Long id, @RequestBody Task task) {
+
         return taskService.updateTask(id, task);
     }
 }
